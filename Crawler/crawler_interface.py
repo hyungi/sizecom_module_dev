@@ -1,19 +1,11 @@
 from abc import *
 
-'''
-HOW TO RUN selenium-chrome ON NON-DISPLAY env
-1. apt-get install chromium-browser
-2. apt-get install xvfb
-3. pip install pyvirtualdisplay
-4. Call pyvirtualdisplay.Display befroe using selenium
-5. Don't forget to use Chromedriver ver.0.73 for linux64
-'''
 
-class Crawler(metaclass=ABCMeta) :
-    '''
+class Crawler(metaclass=ABCMeta):
+    """
     extends by platform
     e.g. Musinsa_Crawler
-    '''
+    """
     platform_url = None
     platform_name = None
 
@@ -23,7 +15,7 @@ class Crawler(metaclass=ABCMeta) :
         self.url = url
 
     @abstractmethod
-    def showDevInfo(self, date="2019.04.02"):
+    def show_dev_info(self, date="2019.04.02"):
         '''
         show platform basic info
         :param date: String; the last update date for maintenance, should update manually
@@ -33,32 +25,31 @@ class Crawler(metaclass=ABCMeta) :
               "Url: {url}\n" \
               "Last update : {date}".format(name=self.name, url=self.url, date=date))
 
-    @abstractmethod
-    def getPageHtml(self, page_url):
+    @staticmethod
+    def get_page_html(page_url):
         '''
         get html string of the page with bs4
         :param page_url: String
         :return: String
         '''
         import requests
+        from bs4 import BeautifulSoup
         _page_source = requests.get(page_url)
         page_source = _page_source.text
-        return page_source
+        return BeautifulSoup(page_source, 'html.parser')
+
 
 class PlatformCrawler(Crawler):
     @abstractmethod
     def __init__(self, name, url):
-        super(name, url)
+        super().__init__(name, url)
 
     @abstractmethod
-    def showDevInfo(self, date="2019.04.02"):
+    def show_dev_info(self, date="2019.04.02"):
         super(date)
 
-    def getPageHtml(self, page_url):
-        super(page_url)
-
     @abstractmethod
-    def getBrandUrlList(self):
+    def get_brand_list(self):
         '''
         get all brand urls of the platform
         :return: Dictionary; key: brand_name, value: brand_url
@@ -66,7 +57,7 @@ class PlatformCrawler(Crawler):
         pass
 
     @abstractmethod
-    def getProductUrlList(self):
+    def get_product_url_list(self, length):
         '''
         get all product urls of the platform
         :return: Dictionary; key: product_name, value: product_url
@@ -74,22 +65,22 @@ class PlatformCrawler(Crawler):
         pass
 
     @abstractmethod
-    def getProductHtml(self, product_url):
+    def get_product_html(self, product_url):
         '''
         get product Html of given product_url
         :param product_url: String
         :return: String
         '''
-        return self.getPageHtml(product_url)
+        return self.get_page_html(product_url)
 
     @abstractmethod
-    def getReviewHtml(self, product_url):
+    def get_review_html(self, product_url):
         '''
         get review Html of given product_url
         :param product_url: String
         :return: String
         '''
-        return self.getPageHtml(product_url)
+        return self.get_page_html(product_url)
 
 
 class CommunityCrawler(Crawler):
